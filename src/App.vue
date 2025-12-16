@@ -1,30 +1,58 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view />
+  <div>
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+      <a
+        class="navbar-brand ms-1"
+        href="https://vuejs.org"
+        target="_blank"
+        rel="noopener"
+      >
+        <img
+          src="@/assets/logo.png"
+          width="30"
+          height="30"
+          class="d-inline-block align-top"
+          alt=""
+        />
+        Vue
+      </a>
+
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-3">
+          <li class="nav-item">
+            <router-link to="/profile" class="nav-link" active-class="active"
+              >Admin</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link to="/home" class="nav-link" active-class="active"
+              >Home</router-link
+            >
+          </li>
+        </ul>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <router-link to="/register" class="nav-link" active-class="active"
+              >Sign Up</router-link
+            >
+          </li>
+          <li class="nav-item">
+            <router-link to="/login" class="nav-link" active-class="active"
+              >Sign In</router-link
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <div class="container">
+    <router-view />
+  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script></script>
 
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+<style></style>
