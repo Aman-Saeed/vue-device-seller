@@ -1,4 +1,4 @@
-export default class Purchase {   
+export default class Purchase {
   constructor(userId, deviceId, price, color, purchaseTime, id) {
     this.id = id;
     this.userId = userId;

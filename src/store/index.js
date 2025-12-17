@@ -5,10 +5,9 @@ export default createStore({
     currentUser: JSON.parse(localStorage.getItem("currentUser")),
   },
   getters: {
-    currentUser: state => state.currentUser,
+    currentUser: (state) => state.currentUser,
   },
   mutations: {
-
     updateUserInMutation(state, user) {
       state.currentUser = user;
       localStorage.setItem("currentUser", JSON.stringify(user));
@@ -16,16 +15,15 @@ export default createStore({
     clearUserInMutation(state) {
       state.currentUser = null;
       localStorage.removeItem("currentUser");
-    }
-
+    },
   },
   actions: {
     updateUser(state, user) {
       state.commit("updateUserInMutation", user);
     },
     clearUser(state) {
-      state.commit("clearUserInMutation")
-    }
+      state.commit("clearUserInMutation");
+    },
   },
   modules: {},
 });

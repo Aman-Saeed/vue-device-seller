@@ -1,6 +1,6 @@
-const Role ={
-    ADMIN: 'ADMIN',
-    USER: 'USER'
-}
+const Role = {
+  ADMIN: "ADMIN",
+  USER: "USER",
+};
 
 export default Role;

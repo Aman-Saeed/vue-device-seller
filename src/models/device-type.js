@@ -1,8 +1,8 @@
 const deviceTypes = {
-  PHONE: 'SMARTPHONE',
-  LAPTOP: 'LAPTOP',
-  DESKTOP: 'DESKTOP',
-  TABLET: 'TABLET'
-}
+  PHONE: "SMARTPHONE",
+  LAPTOP: "LAPTOP",
+  DESKTOP: "DESKTOP",
+  TABLET: "TABLET",
+};
 
 export default deviceTypes;
