@@ -135,15 +135,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.custom-card {
-  width: 350px;
-  max-width: 100%;
-
-  background-color: #a8bd88;
-}
-.user-icon {
-  font-size: 100px;
-  color: #35495e;
-}
-</style>
+<style scoped></style>
