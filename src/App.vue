@@ -19,7 +19,7 @@
 
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-3">
-          <li class="nav-item">
+          <li class="nav-item" v-if="isAdmin">
             <router-link to="/profile" class="nav-link" active-class="active"
               >Admin</router-link
             >
@@ -31,7 +31,7 @@
           </li>
         </ul>
       </div>
-      <div class="collapse navbar-collapse">
+      <div class="collapse navbar-collapse" v-if="!currentUser">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
             <router-link to="/register" class="nav-link" active-class="active"
@@ -45,6 +45,19 @@
           </li>
         </ul>
       </div>
+
+      <div class="collapse navbar-collapse" v-if="currentUser">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <router-link to="/profile" class="nav-link" active-class="active">
+              {{ currentUser.name || currentUser.username || "User" }}
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" @click="logout">Logout</a>
+          </li>
+        </ul>
+      </div>
     </nav>
   </div>
 
@@ -53,6 +66,53 @@
   </div>
 </template>
 
-<script></script>
+<script>
+import vuex from "vuex";
+import Role from "./models/role";
+
+export default {
+  computed: {
+    ...vuex.mapGetters(["currentUser"]),
+    isAdmin() {
+      const r = this.currentUser?.role;
+      if (!r) return false;
+
+      // role as string (case-insensitive)
+      if (typeof r === "string") return r.toUpperCase() === Role.ADMIN;
+
+      // role as array of strings or objects
+      if (Array.isArray(r)) {
+        return r.some((item) => {
+          if (typeof item === "string")
+            return item.toUpperCase() === Role.ADMIN;
+          if (typeof item === "object" && item !== null)
+            return (item.name || item.role || "").toUpperCase() === Role.ADMIN;
+          return false;
+        });
+      }
+
+      // role as object { name: 'ADMIN' } or { role: 'ADMIN' }
+      if (typeof r === "object" && r !== null) {
+        return ((r.name || r.role || "") + "").toUpperCase() === Role.ADMIN;
+      }
+
+      return false;
+    },
+  },
+
+  mounted() {
+    // Helpful debug: inspect what the store actually contains at startup
+    console.debug("currentUser (from store):", this.currentUser);
+  },
+
+  methods: {
+    ...vuex.mapActions(["clearUser"]),
+    logout() {
+      this.clearUser();
+      this.$router.push("/login");
+    },
+  },
+};
+</script>
 
 <style></style>
