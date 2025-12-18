@@ -74,29 +74,7 @@ export default {
   computed: {
     ...vuex.mapGetters(["currentUser"]),
     isAdmin() {
-      const r = this.currentUser?.role;
-      if (!r) return false;
-
-      // role as string (case-insensitive)
-      if (typeof r === "string") return r.toUpperCase() === Role.ADMIN;
-
-      // role as array of strings or objects
-      if (Array.isArray(r)) {
-        return r.some((item) => {
-          if (typeof item === "string")
-            return item.toUpperCase() === Role.ADMIN;
-          if (typeof item === "object" && item !== null)
-            return (item.name || item.role || "").toUpperCase() === Role.ADMIN;
-          return false;
-        });
-      }
-
-      // role as object { name: 'ADMIN' } or { role: 'ADMIN' }
-      if (typeof r === "object" && r !== null) {
-        return ((r.name || r.role || "") + "").toUpperCase() === Role.ADMIN;
-      }
-
-      return false;
+      return this.currentUser?.role === Role.ADMIN;
     },
   },
 

@@ -6,7 +6,8 @@ import Profile from "@/views/Profile.vue";
 import NotFound from "@/views/NotFound.vue";
 import Unauthorized from "@/views/Unauthorized.vue";
 import Admin from "@/views/Admin.vue";
-
+import Store from "../store";
+import Role from "../models/role";
 const routes = [
   {
     path: "/",
@@ -31,11 +32,13 @@ const routes = [
     name: "profile",
     path: "/profile",
     component: Profile,
+    meta: { roles: [Role.ADMIN, Role.USER] },
   },
   {
     name: "admin",
     path: "/admin",
     component: Admin,
+    meta: { roles: [Role.ADMIN] },
   },
   {
     name: "404",
@@ -56,6 +59,23 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const { roles } = to.meta;
+  const currentUser = Store.getters["currentUser"];
+
+  if (roles?.length) {
+    if (!currentUser) {
+      return next({ path: "/login" });
+    }
+
+    const hasRole = roles.includes(currentUser.role);
+    if (!hasRole) {
+      return next({ path: "/401" });
+    }
+  }
+  next();
 });
 
 export default router;
