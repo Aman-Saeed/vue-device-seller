@@ -65,13 +65,42 @@ router.beforeEach((to, from, next) => {
   const { roles } = to.meta;
   const currentUser = Store.getters["currentUser"];
 
+  const userHasRole = (user, requiredRoles) => {
+    if (!user) return false;
+    const role = user.role;
+    if (!role) return false;
+
+    // role is a string
+    if (typeof role === "string") {
+      return requiredRoles.some(
+        (r) => role === r || role === `ROLE_${r}` || role.toUpperCase() === r
+      );
+    }
+
+    // role is an array
+    if (Array.isArray(role)) {
+      return role.some(
+        (ur) =>
+          requiredRoles.includes(ur) ||
+          requiredRoles.includes(ur.replace(/^ROLE_/, ""))
+      );
+    }
+
+    // role is an object with .name or .role
+    if (typeof role === "object") {
+      const name = role.name || role.role;
+      return requiredRoles.some((r) => name === r || name === `ROLE_${r}`);
+    }
+
+    return false;
+  };
+
   if (roles?.length) {
     if (!currentUser) {
       return next({ path: "/login" });
     }
 
-    const hasRole = roles.includes(currentUser.role);
-    if (!hasRole) {
+    if (!userHasRole(currentUser, roles)) {
       return next({ path: "/401" });
     }
   }

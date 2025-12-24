@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import authenticationService from "@/common/services/authentication.service";
+import authenticationService from "@/services/authentication.service";
 import User from "@/models/user";
 import vuex from "vuex";
 
@@ -92,7 +92,10 @@ export default {
       authenticationService
         .login(this.FormData)
         .then((response) => {
+          console.debug("login response.data:", response.data);
           this.updateUser(response.data);
+          console.debug("normalized currentUser (store):", this.currentUser);
+          console.debug("logged-in role:", this.currentUser?.role);
           this.$router.push("/profile");
         })
         .catch((err) => {

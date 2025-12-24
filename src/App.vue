@@ -20,7 +20,7 @@
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ms-3">
           <li class="nav-item" v-if="isAdmin">
-            <router-link to="/profile" class="nav-link" active-class="active"
+            <router-link to="/admin" class="nav-link" active-class="active"
               >Admin</router-link
             >
           </li>
@@ -74,7 +74,27 @@ export default {
   computed: {
     ...vuex.mapGetters(["currentUser"]),
     isAdmin() {
-      return this.currentUser?.role === Role.ADMIN;
+      const role = this.currentUser?.role;
+      if (!role) return false;
+
+      if (typeof role === "string") {
+        return (
+          role === Role.ADMIN ||
+          role === `ROLE_${Role.ADMIN}` ||
+          role.toUpperCase() === Role.ADMIN
+        );
+      }
+
+      if (Array.isArray(role)) {
+        return role.includes(Role.ADMIN) || role.includes(`ROLE_${Role.ADMIN}`);
+      }
+
+      if (typeof role === "object") {
+        const name = role.name || role.role;
+        return name === Role.ADMIN || name === `ROLE_${Role.ADMIN}`;
+      }
+
+      return false;
     },
   },
 

@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import authenticationService from "@/common/services/authentication.service";
+import authenticationService from "@/services/authentication.service";
 import User from "@/models/user";
 import vuex from "vuex";
 
