@@ -14,7 +14,7 @@ class DeviceService {
   }
 
   getAllDevices() {
-    return axios.get(API_URL);
+    return axios.get(API_URL, { headers: authHeader() });
   }
 }
 

@@ -19,7 +19,7 @@
           </div>
         </div>
         <div class="card-body">
-          <table class="table table-striped">
+          <table id="allDevicesTable" class="table table-striped">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  <DeviceModal ref="deviceModal" />
+  <DeviceModal ref="deviceModal" @saved="deviceSaved" />
 </template>
 
 <script>
@@ -69,7 +69,22 @@ export default {
   mounted() {
     DeviceService.getAllDevices()
       .then((response) => {
-        this.deviceList = response.data;
+        console.debug("getAllDevices response:", response);
+        // Support several response shapes: array, paged { content: [] }, named field etc.
+        let list = [];
+        if (Array.isArray(response.data)) {
+          list = response.data;
+        } else if (response.data && Array.isArray(response.data.content)) {
+          list = response.data.content;
+        } else if (response.data && Array.isArray(response.data.devices)) {
+          list = response.data.devices;
+        } else if (response.data && typeof response.data === "object") {
+          const arr = Object.values(response.data).find((v) =>
+            Array.isArray(v)
+          );
+          if (arr) list = arr;
+        }
+        this.deviceList = list;
       })
       .catch((error) => {
         console.error("There was an error fetching the devices:", error);
@@ -78,6 +93,9 @@ export default {
   methods: {
     createDeviceRequest() {
       this.$refs["deviceModal"].showDeviceModal();
+    },
+    deviceSaved(device) {
+      this.deviceList.push(device);
     },
   },
 };
