@@ -1,6 +1,10 @@
 <template>
   <div class="container">
     <div class="pt-5">
+      <div class="alert alert-danger" v-if="errorMessage">
+        {{ errorMessage }}
+      </div>
+
       <div class="card">
         <div class="card-header">
           <div class="row">
@@ -38,8 +42,18 @@
                 <td>{{ device.deviceType }}</td>
                 <td>{{ new Date(device.createTime).toLocaleDateString() }}</td>
                 <td>
-                  <button class="btn btn-sm btn-outline-primary">Edit</button>
-                  <button class="btn btn-sm btn-outline-danger">Delete</button>
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    @click="editDeviceRequest(device)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    @click="deleteDeviceRequest(device, ind)"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -49,12 +63,19 @@
     </div>
   </div>
 
-  <DeviceModal ref="deviceModal" @saved="deviceSaved" />
+  <DeviceModal
+    ref="deviceModal"
+    :selected-device="selectedDevice"
+    @saved="deviceSaved"
+  />
 </template>
 
 <script>
 import DeviceService from "@/services/device.service";
 import DeviceModal from "@/components/Device.vue";
+import Device from "@/models/device";
+import { nextTick } from "vue";
+import { Modal } from "bootstrap";
 
 export default {
   name: "admin-page",
@@ -64,6 +85,8 @@ export default {
   data() {
     return {
       deviceList: [],
+      selectedDevice: new Device(),
+      errorMessage: null,
     };
   },
   mounted() {
@@ -92,10 +115,63 @@ export default {
   },
   methods: {
     createDeviceRequest() {
-      this.$refs["deviceModal"].showDeviceModal();
+      this.selectedDevice = new Device();
+
+      const modalComp = this.$refs && this.$refs.deviceModal;
+      if (modalComp && typeof modalComp.showDeviceModal === "function") {
+        modalComp.showDeviceModal();
+        return;
+      }
+
+      const modalEl = document.getElementById("deviceModal");
+      if (modalEl) {
+        const modal = Modal.getInstance(modalEl) || new Modal(modalEl);
+        modal.show();
+      } else {
+        console.warn(
+          "Unable to show device modal: ref and DOM element not found"
+        );
+      }
     },
     deviceSaved(device) {
-      this.deviceList.push(device);
+      const itemIndex = this.deviceList.findIndex(
+        (item) => item.id === device.id
+      );
+      if (itemIndex !== -1) {
+        this.deviceList[itemIndex] = device;
+      } else {
+        this.deviceList.push(device);
+      }
+    },
+    editDeviceRequest(device) {
+      this.selectedDevice = Object.assign({}, device);
+      nextTick().then(() => {
+        const modalComp = this.$refs && this.$refs.deviceModal;
+        if (modalComp && typeof modalComp.showDeviceModal === "function") {
+          modalComp.showDeviceModal();
+          return;
+        }
+
+        const modalEl = document.getElementById("deviceModal");
+        if (modalEl) {
+          const modal = Modal.getInstance(modalEl) || new Modal(modalEl);
+          modal.show();
+        } else {
+          console.warn(
+            "Unable to show device modal: ref and DOM element not found"
+          );
+        }
+      });
+    },
+    deleteDeviceRequest(device, ind) {
+      DeviceService.deleteDevice(device)
+        .then(() => {
+          this.deviceList.splice(ind, 1);
+        })
+        .catch((err) => {
+          this.errorMessage = "Error deleting device.";
+          console.error("Error deleting device:", err);
+        });
     },
   },
 };

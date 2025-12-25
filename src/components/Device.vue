@@ -125,9 +125,9 @@ export default {
     const submitted = ref(false);
     const deviceTypes = ref([
       DeviceType.LAPTOP,
+      DeviceType.DESKTOP,
       DeviceType.PHONE,
       DeviceType.TABLET,
-      DeviceType.DESKTOP,
     ]);
 
     function saveDevice() {
