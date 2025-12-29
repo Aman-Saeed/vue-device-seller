@@ -1,5 +1,5 @@
 <template>
-  <div class="modal fade" id="deleteModal" tabIndex="-1">
+  <div class="modal fade" ref="deleteModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -33,17 +33,27 @@
 </template>
 
 <script>
-import $ from "jquery";
+import { Modal } from "bootstrap";
 
 export default {
   name: "device-delete-modal",
   methods: {
     showDeleteModal() {
-      $("#deleteModal").modal("show");
+      const modalEl = this.$refs.deleteModal;
+      if (modalEl) {
+        const modal = Modal.getInstance(modalEl) || new Modal(modalEl);
+        modal.show();
+      } else {
+        console.warn("delete modal element not found");
+      }
     },
     deleteDevice() {
       this.$emit("confirmed");
-      $("#deleteModal").modal("hide");
+      const modalEl = this.$refs.deleteModal;
+      if (modalEl) {
+        const modal = Modal.getInstance(modalEl) || new Modal(modalEl);
+        modal.hide();
+      }
     },
   },
 };

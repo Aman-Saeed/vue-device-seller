@@ -68,11 +68,14 @@
     :selected-device="selectedDevice"
     @saved="deviceSaved"
   />
+
+  <DeviceDeleteConfirm ref="deleteDeviceModal" @confirmed="deleteDevice" />
 </template>
 
 <script>
 import DeviceService from "@/services/device.service";
 import DeviceModal from "@/components/Device.vue";
+import DeviceDeleteConfirm from "@/components/DeviceDeleteConfirm.vue";
 import Device from "@/models/device";
 import { nextTick } from "vue";
 import { Modal } from "bootstrap";
@@ -81,12 +84,14 @@ export default {
   name: "admin-page",
   components: {
     DeviceModal,
+    DeviceDeleteConfirm,
   },
   data() {
     return {
       deviceList: [],
       selectedDevice: new Device(),
       errorMessage: null,
+      selectedIndex: undefined,
     };
   },
   mounted() {
@@ -164,9 +169,17 @@ export default {
       });
     },
     deleteDeviceRequest(device, ind) {
-      DeviceService.deleteDevice(device)
+      this.selectedDevice = device;
+      this.selectedIndex = ind;
+
+      nextTick(() => {
+        this.$refs["deleteDeviceModal"].showDeleteModal();
+      });
+    },
+    deleteDevice() {
+      DeviceService.deleteDevice(this.selectedDevice)
         .then(() => {
-          this.deviceList.splice(ind, 1);
+          this.deviceList.splice(this.selectedIndex, 1);
         })
         .catch((err) => {
           this.errorMessage = "Error deleting device.";
