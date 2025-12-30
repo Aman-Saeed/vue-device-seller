@@ -1,19 +1,21 @@
-import { BASE_API_URL } from "@/common/Constants";
+import { BASE_API_URL } from "../common/Constants";
 import axios from "axios";
-import { authHeader } from "./base.service";
+import { authHeader, handleResponseWithLoginCheck } from "./base.service";
 
-
-const API_URL = BASE_API_URL + "/API/purchases/";
+const API_URL = BASE_API_URL + "/api/purchase";
 
 class PurchaseService {
+  savePurchase(purchase) {
+    const req = axios.post(API_URL, purchase, { headers: authHeader() });
 
-    savePurchase(purchase){
-        return axios.post(API_URL, purchase, {headers: authHeader()});
-    }
+    return handleResponseWithLoginCheck(req);
+  }
 
-    getAllPurchaseItems(){
-        return axios.get(API_URL, {headers: authHeader()});
-    }
+  getAllPurchaseItems() {
+    const req = axios.get(API_URL, { headers: authHeader() });
+
+    return handleResponseWithLoginCheck(req);
+  }
 }
 
 export default new PurchaseService();

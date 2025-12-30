@@ -13,9 +13,23 @@ window.jQuery = $;
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faHome, faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDesktop,
+  faHome,
+  faLaptop,
+  faUserCircle,
+  faTabletAlt,
+  faMobileAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
-library.add(faHome, faUserCircle);
+library.add(
+  faHome,
+  faUserCircle,
+  faDesktop,
+  faLaptop,
+  faTabletAlt,
+  faMobileAlt
+);
 
 const app = createApp(App);
 
