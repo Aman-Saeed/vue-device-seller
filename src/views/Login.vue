@@ -1,39 +1,40 @@
 <template>
   <div class="container mt-5">
     <div class="card ms-auto me-auto p-3 shadow-lg custom-card">
-      <font-awesome-icon
-        icon="user-circle"
-        class="user-icon ms-auto me-auto mb-3"
-      />
+      <font-awesome-icon icon="user-circle" class="ms-auto me-auto user-icon" />
+
       <div v-if="errorMessage" class="alert alert-danger">
         {{ errorMessage }}
       </div>
+
       <form
         @submit.prevent="handleLogin"
         novalidate
         :class="submitted ? 'was-validated' : ''"
       >
         <div class="form-group">
-          <label for="name">Username</label>
+          <label for="username">Username</label>
           <input
+            v-model="formData.username"
             type="text"
             id="username"
-            v-model="FormData.username"
             class="form-control"
-            placeholder="Enter your username"
+            name="username"
+            placeholder="Username"
             required
           />
           <div class="invalid-feedback">Username is required.</div>
         </div>
 
         <div class="form-group">
-          <label for="name">Password</label>
+          <label for="password">Password</label>
           <input
+            v-model="formData.password"
             type="password"
             id="password"
-            v-model="FormData.password"
             class="form-control"
-            placeholder="Enter your password"
+            name="password"
+            placeholder="Password"
             required
           />
           <div class="invalid-feedback">Password is required.</div>
@@ -48,66 +49,107 @@
         </button>
       </form>
 
-      <router-link to="/register" class="btn btn-link" style="color: black">
-        Create New account? Sign up
+      <router-link to="/register" class="btn btn-link" style="color: darkgray">
+        Create New Account!
       </router-link>
     </div>
   </div>
 </template>
 
 <script>
-import authenticationService from "@/services/authentication.service";
-import User from "@/models/user";
-import vuex from "vuex";
+import User from "../models/user";
+import AuthenticationService from "../services/authentication.service";
+
+import { onMounted, ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default {
   name: "login-page",
-  data() {
-    return {
-      FormData: new User(),
-      loading: false,
-      submitted: false,
-      errorMessage: "",
-    };
-  },
+  setup: function () {
+    const formData = ref(new User());
+    const loading = ref(false);
+    const submitted = ref(false);
+    const errorMessage = ref("");
 
-  computed: {
-    ...vuex.mapGetters(["currentUser"]),
-  },
+    const store = useStore();
+    const router = useRouter();
+    const { currentUser } = store.getters;
 
-  mounted() {
-    if (this.currentUser?.username) {
-      this.$router.push("/profile");
-    }
-  },
+    onMounted(() => {
+      //this.currentUser?.username = this.currentUser != null && this.currentUser.username != null
+      if (currentUser?.username) {
+        router.push("/profile");
+      }
+    });
 
-  methods: {
-    ...vuex.mapActions(["updateUser"]),
-    handleLogin() {
-      if (!this.FormData.username || !this.FormData.password) {
+    function handleLogin() {
+      if (!formData.value.username || !formData.value.password) {
         return;
       }
-      this.loading = true;
 
-      authenticationService
-        .login(this.FormData)
+      loading.value = true;
+
+      AuthenticationService.login(formData.value)
         .then((response) => {
-          console.debug("login response.data:", response.data);
-          this.updateUser(response.data);
-          console.debug("normalized currentUser (store):", this.currentUser);
-          console.debug("logged-in role:", this.currentUser?.role);
-          this.$router.push("/profile");
+          store.dispatch("updateUser", response.data);
+          router.push("/profile");
         })
         .catch((err) => {
           console.log(err);
-
-          this.errorMessage = "Unexpected error occurred during login.";
+          errorMessage.value = "Unexpected error occurred.";
         })
-        .then(() => {
-          this.loading = false;
-        });
-    },
+        .then(() => (loading.value = false));
+    }
+
+    return {
+      formData,
+      loading,
+      submitted,
+      errorMessage,
+      currentUser,
+      handleLogin,
+    };
   },
+  /*
+  data() {
+    return {
+      formData: new User(),
+      loading: false,
+      submitted: false,
+      errorMessage: '',
+    };
+  },
+  computed: {
+    ...vuex.mapGetters(['currentUser']),
+  },
+  mounted() {
+    //this.currentUser?.username = this.currentUser != null && this.currentUser.username != null
+    if (this.currentUser?.username) {
+      this.$router.push('/profile');
+    }
+  },
+  methods: {
+    ...vuex.mapActions(['updateUser']),
+    handleLogin() {
+      if (!this.formData.username || !this.formData.password) {
+        return;
+      }
+
+      this.loading = true;
+
+      AuthenticationService.login(this.formData).then((response) => {
+        this.updateUser(response.data);
+        this.$router.push('/profile');
+      }).catch((err) => {
+        console.log(err);
+        this.errorMessage = 'Unexpected error occurred.';
+      })
+      .then(() => this.loading = false);
+    }
+  },
+
+   */
 };
 </script>
 
