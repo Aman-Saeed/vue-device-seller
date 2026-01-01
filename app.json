@@ -1,0 +1,9 @@
+{
+    "name": "vue-device-seller",
+    "version": "0.1.0",
+    "buildpacks": [
+        {
+            "url": "heroku/nodejs"
+        }
+    ]
+}
